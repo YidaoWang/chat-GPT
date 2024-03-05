@@ -26,18 +26,18 @@ app.post('/api/translate', async(req, res, next) => {
   if(req.body.language == undefined || req.body.word == undefined || req.body.language === '' || req.body.word === '') {
     res.send("Please fill all the fields");
   }
-
+  const prompt = `Translate this into ${req.body.language}:\n\ ${req.body.word} \n\n`
   try {
-    const answer = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: `Translate this into ${req.body.language}:\n\ ${req.body.word} \n\n1.`,
-      temperature: 0.3,
-      max_tokens: 100,
-      top_p: 1.0,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
+    const answer = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+     messages: [
+      {
+        role: "user",
+        content: prompt
+      }
+     ]
     });
-    res.send(answer.data.choices[0].text);
+    res.send(answer.data.choices[0].message.content);
   }
   catch(error) {
     return next(error);
